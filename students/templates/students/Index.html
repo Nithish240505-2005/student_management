@@ -1,0 +1,103 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Welcome - Student Management System{% endblock %}
+
+{% block auth_content %}
+<div class="container-fluid p-0">
+    <!-- Navbar for Landing Page -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm"
+        style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-mortarboard-fill me-2"></i> EduManager
+            </a>
+            <div class="d-flex">
+                <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-light text-primary fw-bold">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container py-5 text-center mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3 text-dark">Manage Your School With Ease</h1>
+                <p class="lead text-muted mb-5">
+                    Streamline student data, track courses, and manage performance without the hassle.
+                    The modern solution for educational institutions.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 gap-3">Get Started</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg px-4">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container py-5" id="features">
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm hover-top">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mb-3 d-inline-flex align-items-center justify-content-center"
+                            style="width: 60px; height: 60px;">
+                            <i class="bi bi-people-fill fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 fw-bold">Student Tracking</h3>
+                        <p>Keep detailed records of all your students, their personal information, and enrollment status
+                            in one secure place.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm hover-top">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success bg-gradient text-white rounded-3 mb-3 d-inline-flex align-items-center justify-content-center"
+                            style="width: 60px; height: 60px;">
+                            <i class="bi bi-book-fill fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 fw-bold">Course Management</h3>
+                        <p>Organize courses, assign codes, and track student enrollments per course effortlessly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm hover-top">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info bg-gradient text-white rounded-3 mb-3 d-inline-flex align-items-center justify-content-center"
+                            style="width: 60px; height: 60px;">
+                            <i class="bi bi-bar-chart-fill fs-2"></i>
+                        </div>
+                        <h3 class="fs-4 fw-bold">Real-time Stats</h3>
+                        <p>Get instant insights with our dynamic dashboard showing active students, course distribution,
+                            and more.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5 border-top">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2026 EduManager. All rights reserved.</p>
+        </div>
+    </footer>
+</div>
+
+<style>
+    .hover-top {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-top:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-icon {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}

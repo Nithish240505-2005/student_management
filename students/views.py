@@ -13,6 +13,13 @@ from .forms import StudentForm, UserRegistrationForm, CourseForm
 
 
 # Authentication Views
+def index_view(request):
+    """Landing page view"""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    return render(request, 'students/index.html')
+
+
 def register_view(request):
     """Handle user registration"""
     if request.method == 'POST':
