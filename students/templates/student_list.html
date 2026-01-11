@@ -1,0 +1,191 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Students - Student Management System{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="bi bi-people-fill"></i> Student List
+                    </h6>
+                </div>
+                <div class="col-auto">
+                    <a href="{% url 'student_create' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Student
+                    </a>
+                    <a href="{% url 'export_students' %}" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Export CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Search and Filter Form -->
+            <form method="get" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search by name, ID, or email" 
+                               value="{{ search_query }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="course" class="form-select">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}" 
+                                    {% if course_filter == course.id|stringformat:"s" %}selected{% endif %}>
+                                {{ course.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>
+                                Active
+                            </option>
+                            <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>
+                                Inactive
+                            </option>
+                            <option value="graduated" {% if status_filter == 'graduated' %}selected{% endif %}>
+                                Graduated
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            {% if page_obj %}
+            <!-- Student Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Enrollment Date</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in page_obj %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">{{ student.student_id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if student.profile_photo %}
+                                    <img src="{{ student.profile_photo.url }}" 
+                                         alt="{{ student.full_name }}" 
+                                         class="rounded-circle me-2" width="40" height="40">
+                                    {% else %}
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 40px; height: 40px;">
+                                        {{ student.first_name.0 }}{{ student.last_name.0 }}
+                                    </div>
+                                    {% endif %}
+                                    <strong>{{ student.full_name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ student.email }}</td>
+                            <td>
+                                {% if student.course %}
+                                <span class="badge bg-info">{{ student.course.code }}</span>
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ student.enrollment_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge bg-{% if student.status == 'active' %}success{% elif student.status == 'graduated' %}info{% else %}secondary{% endif %}">
+                                    {{ student.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'student_detail' student.pk %}" 
+                                       class="btn btn-outline-info" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'student_update' student.pk %}" 
+                                       class="btn btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'student_delete' student.pk %}" 
+                                       class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                            First
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                            Next
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                            Last
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <p class="text-muted mt-3">No students found</p>
+                <a href="{% url 'student_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Your First Student
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

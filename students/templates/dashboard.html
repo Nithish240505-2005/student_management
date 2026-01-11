@@ -1,0 +1,230 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Dashboard - Student Management System{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card primary">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-uppercase text-primary fw-bold text-xs mb-1">
+                                Total Students
+                            </div>
+                            <div class="h5 mb-0 fw-bold">{{ total_students }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people text-primary" 
+                               style="font-size: 2rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-uppercase text-success fw-bold text-xs mb-1">
+                                Active Students
+                            </div>
+                            <div class="h5 mb-0 fw-bold">{{ active_students }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-person-check text-success" 
+                               style="font-size: 2rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card info">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-uppercase text-info fw-bold text-xs mb-1">
+                                Total Courses
+                            </div>
+                            <div class="h5 mb-0 fw-bold">{{ total_courses }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-book text-info" 
+                               style="font-size: 2rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-uppercase text-warning fw-bold text-xs mb-1">
+                                Enrollment Rate
+                            </div>
+                            <div class="h5 mb-0 fw-bold">
+                                {% if total_students > 0 %}
+                                    {{ active_students|floatformat:0|default:"0" }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-graph-up text-warning" 
+                               style="font-size: 2rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Students by Course -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="bi bi-bar-chart-fill"></i> Students by Course
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if students_by_course %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Code</th>
+                                    <th class="text-end">Students</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in students_by_course %}
+                                <tr>
+                                    <td>{{ course.name }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ course.code }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary">
+                                            {{ course.student_count }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">No courses available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Students -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="bi bi-clock-history"></i> Recent Students
+                    </h6>
+                    <a href="{% url 'student_list' %}" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_students %}
+                    <div class="list-group list-group-flush">
+                        {% for student in recent_students %}
+                        <a href="{% url 'student_detail' student.pk %}" 
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ student.full_name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-hash"></i> {{ student.student_id }}
+                                        {% if student.course %}
+                                        | <i class="bi bi-book"></i> {{ student.course.code }}
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                <span class="badge bg-{% if student.status == 'active' %}success{% elif student.status == 'graduated' %}info{% else %}secondary{% endif %}">
+                                    {{ student.get_status_display }}
+                                </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">No students enrolled yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="bi bi-lightning-fill"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'student_create' %}" 
+                               class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-person-plus-fill d-block mb-2" 
+                                   style="font-size: 2rem;"></i>
+                                Add Student
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'student_list' %}" 
+                               class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-list-ul d-block mb-2" 
+                                   style="font-size: 2rem;"></i>
+                                View Students
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'course_create' %}" 
+                               class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-journal-plus d-block mb-2" 
+                                   style="font-size: 2rem;"></i>
+                                Add Course
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'export_students' %}" 
+                               class="btn btn-outline-secondary w-100 py-3">
+                                <i class="bi bi-download d-block mb-2" 
+                                   style="font-size: 2rem;"></i>
+                                Export Data
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
